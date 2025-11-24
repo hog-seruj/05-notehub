@@ -1,0 +1,63 @@
+import { fetchNotes } from '../../services/noteService';
+import NoteList from '../NoteList/NoteList';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import Pagination from '../Pagination/Pagination';
+import SearchBox from '../SearchBox/SearchBox';
+import { useDebounce } from 'use-debounce';
+import toast, { Toaster } from 'react-hot-toast';
+import Loader from '../Loader/Loader';
+import ErrorMessage from '../ErrorMessage/ErrorMessage';
+import useModalControl from '../hooks/useModalControl';
+
+import css from './App.module.css';
+import Modal from '../Modal/Modal';
+import NoteForm from '../NoteForm/NoteForm';
+
+function App() {
+  const [searchText, setSearchText] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTextDebounce] = useDebounce(searchText, 500);
+  const { isModalOpen, openModal, closeModal } = useModalControl();
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['notes', searchTextDebounce, currentPage],
+    queryFn: () => fetchNotes(searchTextDebounce, currentPage),
+    placeholderData: keepPreviousData,
+  });
+
+  useEffect(() => {
+    if (data?.notes && data.notes.length < 1) {
+      toast.error('No notes found for your request.');
+    }
+  }, [data]);
+
+  return (
+    <div className={css.app}>
+      <header className={css.toolbar}>
+        <SearchBox search={searchTextDebounce} onChange={setSearchText} />
+        {data && data.totalPages > 1 && (
+          <Pagination
+            totalPages={data.totalPages}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+          />
+        )}
+        <button className={css.button} onClick={openModal}>
+          Create note +
+        </button>
+      </header>
+      <Toaster />
+      {isError && <ErrorMessage />}
+      {isLoading && <Loader />}
+      {data && <NoteList notes={data.notes} />}
+      {isModalOpen && (
+        <Modal>
+          <NoteForm onSuccess={closeModal} closeModal={closeModal} />
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+export default App;
