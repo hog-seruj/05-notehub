@@ -4,6 +4,7 @@ import { useId } from 'react';
 import { createNote } from '../../services/noteService';
 import type { CreateNoteData, Note } from '../../types/note';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 
 import css from './NoteForm.module.css';
 
@@ -37,11 +38,11 @@ export default function NoteForm({ closeModal }: NoteFormProps) {
     mutationFn: (note) => createNote(note),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
-      console.log('Note edited successfully!');
+      toast.success('Note edited successfully!');
       closeModal();
     },
     onError: (error) => {
-      console.error(error);
+      toast.error(`${error}`);
     },
   });
 

@@ -37,6 +37,11 @@ function App() {
     setCurrentPage(1);
   };
 
+  const handleCreateTaskButton = () => {
+    setCurrentPage(1);
+    openModal();
+  };
+
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
@@ -48,7 +53,7 @@ function App() {
             onPageChange={setCurrentPage}
           />
         )}
-        <button className={css.button} onClick={openModal}>
+        <button className={css.button} onClick={handleCreateTaskButton}>
           Create note +
         </button>
       </header>
