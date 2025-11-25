@@ -7,11 +7,6 @@ export interface Note {
   tag: 'Todo' | 'Work' | 'Personal' | 'Meeting' | 'Shopping';
 }
 
-export interface FetchNotesResponse {
-  notes: Note[];
-  totalPages: number;
-}
-
 export interface CreateNoteData {
   title: string;
   content: string;

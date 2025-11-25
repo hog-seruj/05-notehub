@@ -32,10 +32,15 @@ function App() {
     }
   }, [data]);
 
+  const handleSearch = (value: string) => {
+    setSearchText(value);
+    setCurrentPage(1);
+  };
+
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <SearchBox search={searchTextDebounce} onChange={setSearchText} />
+        <SearchBox search={searchTextDebounce} onChange={handleSearch} />
         {data && data.totalPages > 1 && (
           <Pagination
             totalPages={data.totalPages}
@@ -52,8 +57,8 @@ function App() {
       {isLoading && <Loader />}
       {data && <NoteList notes={data.notes} />}
       {isModalOpen && (
-        <Modal>
-          <NoteForm onSuccess={closeModal} closeModal={closeModal} />
+        <Modal onClose={closeModal}>
+          <NoteForm closeModal={closeModal} />
         </Modal>
       )}
     </div>

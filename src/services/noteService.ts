@@ -1,7 +1,10 @@
 import axios from 'axios';
-import type { Note, FetchNotesResponse, CreateNoteData } from '../types/note';
+import type { Note, CreateNoteData } from '../types/note';
 const NOTEToken = import.meta.env.VITE_NOTEHUB_TOKEN;
-
+interface FetchNotesResponse {
+  notes: Note[];
+  totalPages: number;
+}
 const noteInstance = axios.create({
   baseURL: 'https://notehub-public.goit.study/api',
   headers: {
@@ -29,5 +32,6 @@ export const createNote = async (data: CreateNoteData) => {
 };
 
 export const deleteNote = async (id: Note['id']) => {
-  await noteInstance.delete(`/notes/${id}`);
+  const response = await noteInstance.delete(`/notes/${id}`);
+  return response.data;
 };

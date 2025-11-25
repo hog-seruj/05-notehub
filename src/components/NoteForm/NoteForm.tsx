@@ -14,21 +14,21 @@ const INITIAL_VALUES: CreateNoteData = {
 };
 
 const NoteFormSchema = Yup.object().shape({
-  title: Yup.string().min(2, 'Too short').required('Title is required'),
-  content: Yup.string()
-    .max(110, 'Too long')
-    .required('Content field is required'),
+  title: Yup.string()
+    .min(3, 'Minimum 3 symbols')
+    .max(50, 'Maximum 50 symbols')
+    .required('Title is required'),
+  content: Yup.string().max(500, 'Maximum 500 symbols'),
   tag: Yup.string()
     .oneOf(['Todo', 'Work', 'Personal', 'Meeting', 'Shopping'])
     .required('Tag is required'),
 });
 
 interface NoteFormProps {
-  onSuccess: () => void;
   closeModal: () => void;
 }
 
-export default function NoteForm({ onSuccess, closeModal }: NoteFormProps) {
+export default function NoteForm({ closeModal }: NoteFormProps) {
   const fieldId = useId();
 
   const queryClient = useQueryClient();
@@ -38,7 +38,7 @@ export default function NoteForm({ onSuccess, closeModal }: NoteFormProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
       console.log('Note edited successfully!');
-      onSuccess();
+      closeModal();
     },
     onError: (error) => {
       console.error(error);
@@ -108,7 +108,11 @@ export default function NoteForm({ onSuccess, closeModal }: NoteFormProps) {
           >
             Cancel
           </button>
-          <button type="submit" className={css.submitButton} disabled={false}>
+          <button
+            type="submit"
+            className={css.submitButton}
+            disabled={mutation.isPending}
+          >
             Create note
           </button>
         </div>
